@@ -1,12 +1,11 @@
 var openchain = require("openchain");
 var bitcore = require("bitcore-lib");
-
-// var seed = "0123456789abcdef0123456789abcdef";
+// var Mnemonic = require('bitcore-mnemonic');
 var bip39 = require('bip39');
-var Int64 = require('node-int64');
-var seed = new Int64('candy jealous elephant attitude knock tomato bracket device fantasy dune carbon capable');
-// var seed = bip39.mnemonicToSeedHex('candy jealous elephant attitude knock tomato bracket device fantasy dune carbon capable');
-// var seed = "b221d9dbb083a7f33428d7c2a3c3198ae925614d70210e28716ccaa7cd4ddb79";
+
+// var code = new Mnemonic();
+// console.log(code.toString());
+var seed = bip39.mnemonicToSeedHex('candy jealous elephant attitude knock tomato bracket device fantasy dune carbon capable');
 // Load a private key from a seed
 var privateKey = bitcore.HDPrivateKey.fromSeed(seed, "openchain");
 var address = privateKey.publicKey.toAddress();
