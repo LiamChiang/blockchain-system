@@ -1,99 +1,51 @@
 var openchain = require("openchain");
 var bitcore = require("bitcore-lib");
-// var Mnemonic = require('bitcore-mnemonic');
-var bip39 = require('bip39');
+var Mnemonic = require('bitcore-mnemonic');
 
+//Create new Passphrase = new wallet
 // var code = new Mnemonic();
 // console.log(code.toString());
-var seed = bip39.mnemonicToSeedHex('candy jealous elephant attitude knock tomato bracket device fantasy dune carbon capable');
-// Load a private key from a seed
-var privateKey = bitcore.HDPrivateKey.fromSeed(seed, "openchain");
-var address = privateKey.publicKey.toAddress();
- 
-// Calculate the accounts corresponding to the private key
-var issuancePath = "/asset/p2pkh/" + address + "/";
-var assetPath = issuancePath;
-var walletPath = "/p2pkh/" + address + "/";
 
-// Calculate the accounts corresponding to the private key
-var dataPath = "/asset/p2pkh/" + address + "/metadata/";
-var recordName = "datarecord";
-var storedData = "This is the data to store in the chain";
+// // Load a private key from a seed
+// var privateKey = code.toHDPrivateKey();
+// var hdPrivateKey = new bitcore.HDPrivateKey(privateKey);
+// hdPrivateKey.network = bitcore.Networks.get("openchain");
+// var derivedKey = hdPrivateKey.derive(44, true).derive(64, true).derive(0, true).derive(0).derive(0);
 
-console.log("Issuance path: " + issuancePath);
-console.log("Wallet path: " + walletPath);
- 
-console.log("Account path: " + dataPath);
-console.log("Record name: " + recordName);
+// // Calculate the accounts corresponding to the private key
+// var walletPath = "/p2pkh/" + derivedKey + "/";
 
-// Create an Openchain client and signer
-var client = new openchain.ApiClient("http://localhost:8080/");
-var signer = new openchain.MutationSigner(privateKey);
- 
-// Initialize the client
-client.initialize()
-.then(function () {
-    // Retrieve the record being modified
-    return client.getDataRecord(dataPath, recordName)
-})
-.then(function (dataRecord) {
-    // Encode the data into a ByteBuffer
-    var newValue = openchain.encoding.encodeString(storedData);
- 	console.log("data: " + newValue);
-    // Create a new transaction builder
-    return new openchain.TransactionBuilder(client)
-        // Add the key to the transaction builder
-        .addSigningKey(signer)
-        // Modify the record
-        .addRecord(dataRecord.key, newValue, dataRecord.version)
-        // Submit the transaction
-        .submit();
-})
-//storage record result code
-.then(function (result) { 
-	console.log("Record code:");
-	console.log(result); 
-	console.log("-----------------------------");
-})
-.then(function () {
-    // Create a new transaction builder
-    return new openchain.TransactionBuilder(client)
-        // Add the key to the transaction builder
-        .addSigningKey(signer)
-        // Add some metadata to the transaction
-        .setMetadata({ "memo": "Issued through NodeJS" })
-        // Take 100 units of the asset from the issuance path
-        .updateAccountRecord(issuancePath, assetPath, -100);
-})
-.then(function (transactionBuilder) {
-    // Add 100 units of the asset to the target wallet path
-    return transactionBuilder.updateAccountRecord(walletPath, assetPath, 100);
-})
-.then(function (transactionBuilder) {
-    // Submit the transaction
-    return transactionBuilder.submit();
-})
-//transaction result code
-.then(function (result) { 
-	console.log("transaction code:");
-	console.log(result); 
-	console.log("-----------------------------");
-});
+// console.log("Wallet path: " + walletPath);
 
-//record data
-console.log(walletPath);
-console.log(assetPath);
-client.getAccountRecord(walletPath, assetPath)
-.then(function (result) {
-	console.log("data");
-    console.log(result);
-    console.log("-----------------------------");
-});
 
-client.getRecord('e5ad090927593359b8cb65e866a977e30bfa269b25500b9882adab7bf7ae213f')
-.then(function(result){
-	console.log("final data");
-    console.log(result);
-    console.log("-----------------------------");
-});
- 
+//Existing Account
+// console.log("\nExisting");
+// var passphrase = "finish list orient tomorrow fit fine midnight satisfy cover antique creek tank";
+// var toMnenonic = new Mnemonic(passphrase);
+// var privateKey2 = toMnenonic.toHDPrivateKey();
+// console.log(privateKey2);
+
+// var address2 = hdPrivateKey.derive(44, true).derive(64, true).derive(0, true).derive(0).derive(0);
+// var tmp = address2.privateKey.toAddress().toString();
+
+// console.log(tmp);
+// // Calculate the accounts corresponding to the private key
+// var issuancePath2 = "/asset/p2pkh/" + address2 + "/";
+// var assetPath2 = issuancePath2;
+// var walletPath2 = "/p2pkh/" + address2 + "/";
+
+// console.log("Issuance path: " + issuancePath2);
+// console.log("Wallet path: " + walletPath2);
+
+var acc2 = "license saddle depart vintage nurse promote renew suggest steak already flush avocado";
+var acc2Mne = new Mnemonic(acc2);
+// var secondPrivateKey = acc2Mne.toHDPrivateKey();
+// console.log(secondPrivateKey.);
+
+var t = new Mnemonic();
+var makeKey = acc2Mne.toHDPrivateKey() //I think u missed toHDprivatekey
+var hdPrivateKey = new bitcore.HDPrivateKey(makeKey.toString());
+hdPrivateKey.network = bitcore.Networks.get("openchain");
+derivedKey = hdPrivateKey.derive(44, true).derive(64, true).derive(0, true).derive(0).derive(0);
+//Wallet Address is  "/p2pkh/"+derivedKey.privateKey.toAddress().toString()+"/";
+console.log(derivedKey.privateKey.toAddress().toString());
