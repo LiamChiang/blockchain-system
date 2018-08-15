@@ -37,6 +37,54 @@ function existingAccountQuery(passphrase, asset) {
     });
 }
 
+//Transaction test
+function transaction() {
+//Signature for transaction
+var acc2 = "cricket keep resist regret globe express chest cousin push enroll retreat message";
+var acc2Mne = new Mnemonic(acc2);
+var makeKey = acc2Mne.toHDPrivateKey()
+var hdPrivateKey = new bitcore.HDPrivateKey(makeKey.toString());
+hdPrivateKey.network = bitcore.Networks.get("openchain");
+derivedKey = hdPrivateKey.derive(44, true).derive(64, true).derive(0, true).derive(0).derive(0);
+
+// Calculate the accounts corresponding to the private key
+var issuancePath = "/p2pkh/" + derivedKey.privateKey.toAddress().toString()+ "/";
+var assetPath = "/asset/p2pkh/XnikYTESsmmouzd3J8ioZkNLy9JQLsX2gK/";
+var walletPath = "/p2pkh/XuJg5uTu2aWkeFLMj31sXMae1sx9pKPXAf/";
+
+console.log("Issuance path: " + issuancePath);
+console.log("Wallet path: " + walletPath);
+
+// Create an Openchain client and signer
+var client = new openchain.ApiClient("http://192.168.1.44:8080/");
+var signer = new openchain.MutationSigner(derivedKey);
+
+// Initialize the client
+client.initialize()
+.then(function () {
+    // Create a new transaction builder
+    return new openchain.TransactionBuilder(client)
+        // Add the key to the transaction builder
+        .addSigningKey(signer)
+        // Add some metadata to the transaction
+        .setMetadata({ "memo": "Issued through NodeJS" })
+        // Take 100 units of the asset from the issuance path
+        .updateAccountRecord(issuancePath, assetPath, -100);
+})
+.then(function (transactionBuilder) {
+    // Add 100 units of the asset to the target wallet path
+    return transactionBuilder.updateAccountRecord(walletPath, assetPath, 100);
+})
+.then(function (transactionBuilder) {
+    // Submit the transaction
+    return transactionBuilder.submit();
+})
+.then(function (result) { 
+    console.log(result); 
+    recordTransaction(); 
+});
+}
+
 function testDoNotUse() {
 // var acc2 = "license saddle depart vintage nurse promote renew suggest steak already flush avocado";
 // var acc2Mne = new Mnemonic(acc2);
@@ -52,4 +100,4 @@ function testDoNotUse() {
 // console.log(derivedKey.privateKey.toAddress().toString());
 }
 
-existingAccountQuery("deny depend label valid belt begin gesture extend list they outer glove", "/asset/p2pkh/XddsvA9fJurr4mEPggsLiM7BwkJjDtDi2o/");
+transaction();
